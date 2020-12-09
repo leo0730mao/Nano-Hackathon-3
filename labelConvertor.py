@@ -1,5 +1,6 @@
 import os
 import json
+import time
 
 class LabelConvertor():
     def __init__(self, imgSize):
@@ -48,13 +49,13 @@ class LabelConvertor():
             for frame in d["frames"]:
                 for obj in frame["objects"]:
                     o = None
-                    if obj["category"] == "car" or obj["category"] == "bus" or obj["category"] == "truck" or obj["category"] == "motor":
+                    if obj["category"] == "car" or obj["category"] == "bus" or obj["category"] == "truck" or obj["category"] == "motorcycle":
                         o = self.bddObj(obj, "vehicle")
                     elif obj["category"] == "traffic sign":
                         o = self.bddObj(obj, "road sign")
                     elif obj["category"] == "bike":
                         o = self.bddObj(obj, "bicycle")
-                    elif obj["category"] == "person":
+                    elif obj["category"] == "person" or obj["category"] == "rider":
                         o = self.bddObj(obj, "pedestrain")
                     if o is not None:
                         if obj["category"] in self.tagsCount:
@@ -86,7 +87,8 @@ class LabelConvertor():
             for obj in objs:
                 f.write("%s %.6f %.6f %.6f %.6f\n" % (self.tagsmap[obj['tag']], obj['xcenter'], obj['ycenter'], obj['width'], obj['height']))
     
-    def summary(self):
+    def summary(self, srcPath):
+        self.srcPath = srcPath
         train_path = os.path.join(self.srcPath, "train")
         val_path = os.path.join(self.srcPath, "val")
         for path in [train_path, val_path]:
@@ -112,5 +114,6 @@ class LabelConvertor():
 
 if __name__ == '__main__':
     convertor = LabelConvertor((1280, 720))
-    convertor.toYolo("/home/zlc/hackathon/hackathon/bdd100k/labels/100k/train", "/home/zlc/hackathon/bdd100k/labels/train")
-    convertor.toYolo("/home/zlc/hackathon/hackathon/bdd100k/labels/100k/val", "/home/zlc/hackathon/bdd100k/labels/val")
+    # convertor.toYolo("/home/zlc/hackathon/bdd100k/label20/train", "/home/zlc/hackathon/bdd100k/label20_yolo/train")
+    # convertor.toYolo("/home/zlc/hackathon/bdd100k/label20/val", "/home/zlc/hackathon/bdd100k/label20_yolo/val")
+    convertor.summary("/home/zlc/hackathon/bdd100k/label20")
